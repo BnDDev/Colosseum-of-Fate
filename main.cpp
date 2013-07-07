@@ -39,8 +39,7 @@ void loop(SDL_Window* window)
 int main(int argc, char** argv)
 {
     AppMain(argc, argv);
-    if(SDL_Init(SDL_INIT_VIDEO) < 0)
-        error("Error initializing SDL with Video");
+    if(SDL_Init(SDL_INIT_VIDEO) < 0) error("Error initializing SDL with Video");
 
     //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
