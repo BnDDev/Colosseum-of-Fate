@@ -4,9 +4,11 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
+#include <cstdarg>
 #include <cstring>
 #include <iomanip>
 #include <chrono>
+#include <SDL2/SDL.h>
 
 #define FILENAME_MAX_LEN 256
 
@@ -19,12 +21,11 @@ private:
         WARN,
         INFO
     } debug;
-    std::ofstream flog;
-    std::ostream olog;
+    FILE* flog;
     std::chrono::steady_clock::time_point tstart;
 
 protected:
-    void Log(LogLevel, const char*, size_t);
+    void Log(LogLevel, const char*, ...);
 public:
     AppMain(int, char**);
     ~AppMain();

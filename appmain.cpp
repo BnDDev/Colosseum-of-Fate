@@ -1,54 +1,63 @@
 #include "appmain.h"
 
-void AppMain::Log(LogLevel ll, const char* str, size_t num = 0)
+void AppMain::Log(LogLevel ll, const char* fmt, ...)
 {
     if(ll > debug) return;
+    va_list args;
+    va_start(args, fmt);
     std::chrono::steady_clock::duration telapsed = std::chrono::steady_clock::now() - tstart;
     switch(ll)
     {
         case LogLevel::EVER:
-            olog<<" [EVER] "<<std::dec<<std::setw(16)<<std::setfill(' ')<<telapsed.count()<<" | "<<str;
-            if(num) olog<<" (0x"<<std::hex<<std::setw(sizeof(num) * 2)<<std::setfill('0')<<std::uppercase<<num<<")";
-            olog<<"\n";
+            fprintf(flog, " [EVER] %16llu | ", telapsed.count());
+            vfprintf(flog, fmt, args);
+            fprintf(flog, "\n");
             break;
         case LogLevel::INFO:
-            olog<<" [INFO] "<<std::dec<<std::setw(16)<<std::setfill(' ')<<telapsed.count()<<" | "<<str;
-            if(num) olog<<" (0x"<<std::hex<<std::setw(sizeof(num) * 2)<<std::setfill('0')<<std::uppercase<<num<<")";
-            olog<<"\n";
+            fprintf(flog, " [INFO] %16llu | ", telapsed.count());
+            vfprintf(flog, fmt, args);
+            fprintf(flog, "\n");
             break;
         case LogLevel::WARN:
-            olog<<" [WARN] "<<std::dec<<std::setw(16)<<std::setfill(' ')<<telapsed.count()<<" | "<<str;
-            if(num) olog<<" (0x"<<std::hex<<std::setw(sizeof(num) * 2)<<std::setfill('0')<<std::uppercase<<num<<")";
-            olog<<"\n";
-            olog.flush();
+            fprintf(flog, " [WARN] %16llu | ", telapsed.count());
+            vfprintf(flog, fmt, args);
+            fprintf(flog, "\n");
+            fflush(flog);
             break;
         case LogLevel::ERROR:
-            olog<<"[ERROR] "<<std::dec<<std::setw(16)<<std::setfill(' ')<<telapsed.count()<<" | "<<str;
-            if(num) olog<<" (0x"<<std::hex<<std::setw(sizeof(num) * 2)<<std::setfill('0')<<std::uppercase<<num<<")";
-            olog<<"\n";
-            olog.flush();
+            fprintf(flog, "[ERROR] %16llu | ", telapsed.count());
+            vfprintf(flog, fmt, args);
+            fprintf(flog, "\n");
+            fflush(flog);
             break;
         default:
             return;
     }
+    va_end(args);
 }
 
-AppMain::AppMain(int argc, char** argv) : olog(std::clog.rdbuf())
+AppMain::AppMain(int argc, char** argv) : flog(nullptr)
 {
+    fclose(stdin);
+    fclose(stdout);
+    fclose(stderr);
+
     tstart = std::chrono::steady_clock::now();
     debug = LogLevel::INFO;
 
-    char filename[FILENAME_MAX_LEN];
-    std::time_t now = std::time(nullptr);
-    std::strftime(filename, FILENAME_MAX_LEN - 4, "%Y-%m-%d_%H-%M-%S", std::localtime(&now));
-    std::strcat(filename, ".log");
-    flog.open(filename, std::ios::trunc);
-    olog.rdbuf(flog.rdbuf());
+    if(debug != LogLevel::NONE) {
+        char filename[FILENAME_MAX_LEN];
+        std::time_t now = std::time(nullptr);
+        std::strftime(filename, FILENAME_MAX_LEN, "%Y-%m-%d_%H-%M-%S.log", std::localtime(&now));
+        flog = fopen(filename, "w");
+    }
 
     Log(LogLevel::INFO, "AppMain()");
 }
 
 AppMain::~AppMain()
 {
+    SDL_Delay(1000);
     Log(LogLevel::INFO, "~AppMain()");
+    if(flog) fclose(flog);
 }
