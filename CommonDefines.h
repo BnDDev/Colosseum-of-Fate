@@ -1,0 +1,6 @@
+#ifndef GLOBALDEFINES_H
+#define GLOBALDEFINES_H
+
+#define FILENAME_MAX_LEN 256
+
+#endif // GLOBALDEFINES_H
