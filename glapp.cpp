@@ -1,8 +1,9 @@
 #include "glapp.h"
 
+extern bool constexpr (*StateMachine::StateInit[StateID::Null])(StateID);
+
 GLApp::GLApp(const char* str, int w, int h) {
     Log::Info("GLApp(\"%s\", %d, %d)", str, w, h);
-    tlast = std::chrono::steady_clock::now();
     window = SDL_CreateWindow(str, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_OPENGL);
     if(!window) Log::Error("SDL_CreateWindow failed: %s", SDL_GetError());
     else {
@@ -23,19 +24,14 @@ GLApp::~GLApp() {
 }
 
 bool GLApp::tick() {
-    std::chrono::steady_clock::time_point tnow = std::chrono::steady_clock::now();
-    std::chrono::steady_clock::duration telapsed = tlast - tnow;
-    tlast = tnow;
+    //if(state->update(state->data) && !InitState(state->data->nextState)) return false;
+    //state->redraw(state->data);
+    //SDL_GL_SwapWindow(window);
 
-    //handleEvents();
-    SDL_Event event;
-    while(SDL_PollEvent(&event)) {
-        if(event.type == SDL_QUIT) return false;
-    }
-    //update();
-    //redraw();
-    glClear(GL_COLOR_BUFFER_BIT);
-    SDL_GL_SwapWindow(window);
+    StateMachine::StateInit[StateID::Red](StateID::Red);
+    return true;
+}
 
+bool GLApp::InitState(StateID nextState) {
     return true;
 }
