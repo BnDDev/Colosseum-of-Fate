@@ -1,35 +1,24 @@
 #include <ctime>
-#include <SDL2/SDL.h>
-#include "CommonDefines.h"
+#include "bnd.h"
 #include "log.h"
-#include "glapp.h"
-
-void Init() {
-    char logfile[FILENAME_MAX_LEN];
-    std::time_t now = std::time(nullptr);
-    std::strftime(logfile, FILENAME_MAX_LEN, "%Y-%m-%d_%H-%M-%S.log", std::localtime(&now));
-    Log::Init(Log::Level::Info);
-    Log::Info("Init");
-
-    if(SDL_Init(SDL_INIT_VIDEO) < 0) Log::Error("SDL_Init failed: %s", SDL_GetError());
-    else Log::Info("SDL_Init OK");
-}
-
-void Quit() {
-    Log::Info("Quit");
-    SDL_Quit();
-    Log::Quit();
-}
+#include "cof.h"
 
 int main(int argc, char** argv)
 {
-    Init();
+    /*/
+    char logfile[BnD::FILENAME_MAX_LEN];
+    std::time_t now = std::time(nullptr);
+    std::strftime(logfile, BnD::FILENAME_MAX_LEN, "%Y-%m-%d_%H-%M-%S.log", std::localtime(&now));
+    /**/
+    Log::Init(Log::Level::Info/*, logfile*/);
+    Log::Info("Initializing...");
 
-    GLApp* mainApp = new GLApp("Colosseum of Fate", 800, 600);
-    while(mainApp->tick());
-    delete mainApp;
+    CoF::Init("Colosseum of Fate", 800, 600);
+    CoF::Loop();
+    CoF::Quit();
 
-    Quit();
+    Log::Info("Quiting...");
+    Log::Quit();
     return 0;
 }
 
