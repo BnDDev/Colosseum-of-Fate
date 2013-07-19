@@ -6,12 +6,66 @@ namespace CoF {
         extern SDL_GLContext glcontext;
     }
 
-    template<> void StateTemplate<StateEnum::Red>::Init() { Log::Info("State<Red>::Init()"); }
-    template<> void StateTemplate<StateEnum::Red>::Quit() { Log::Info("State<Red>::Quit()"); }
-    template<> void StateTemplate<StateEnum::Blue>::Init() { Log::Info("State<Blue>::Init()"); }
-    template<> void StateTemplate<StateEnum::Blue>::Quit() { Log::Info("State<Blue>::Quit()"); }
+    template<int I> StateDataTemplate<I> StateTemplate<I>::data = StateDataTemplate<I>();
+
+    ////////////////////////////////
+    /// StateEnum::Red           ///
+    ////////////////////////////////
+    template<> void StateTemplate<StateEnum::Red>::Init() {
+        Log::Info("State<Red>::Init()");
+        glClearColor(1.0, 0.0, 0.0, 1.0);
+    }
+    template<> void StateTemplate<StateEnum::Red>::Quit() {
+        Log::Info("State<Red>::Quit()");
+    }
+    template<> bool StateTemplate<StateEnum::Red>::Tick() {
+        while(SDL_PollEvent(&data.event)) {
+            switch(data.event.type)
+            {
+            case SDL_MOUSEBUTTONDOWN:
+                state.current = StateEnum::Blue;
+                Quit();
+                return false;
+            case SDL_QUIT:
+                state.current = StateEnum::Global;
+                Quit();
+                return false;
+            }
+        }
+        glClear(GL_COLOR_BUFFER_BIT);
+        return true;
+    }
+
+    ////////////////////////////////
+    /// StateEnum::Blue          ///
+    ////////////////////////////////
+    template<> void StateTemplate<StateEnum::Blue>::Init() {
+        Log::Info("State<Blue>::Init()");
+        glClearColor(0.0, 0.0, 1.0, 1.0);
+    }
+    template<> void StateTemplate<StateEnum::Blue>::Quit() {
+        Log::Info("State<Blue>::Quit()");
+    }
+    template<> bool StateTemplate<StateEnum::Blue>::Tick() {
+        while(SDL_PollEvent(&data.event)) {
+            switch(data.event.type)
+            {
+            case SDL_MOUSEBUTTONDOWN:
+                state.current = StateEnum::Red;
+                Quit();
+                return false;
+            case SDL_QUIT:
+                state.current = StateEnum::Global;
+                Quit();
+                return false;
+            }
+        }
+        glClear(GL_COLOR_BUFFER_BIT);
+        return true;
+    }
     template<int... I> constexpr void (*StateMachineTemplate<BnD::Indices<I...>>::Init[sizeof...(I)])();
     template<int... I> constexpr void (*StateMachineTemplate<BnD::Indices<I...>>::Quit[sizeof...(I)])();
+    template<int... I> constexpr bool (*StateMachineTemplate<BnD::Indices<I...>>::Tick[sizeof...(I)])();
 
     bool Init(const char* str, int w, int h) {
         Log::Info("CoF::Init(\"%s\", %d, %d)", str, w, h);
@@ -37,8 +91,18 @@ namespace CoF {
         Log::Info("SDL_GL_CreateContext OK");
 
         Log::Info("OpenGL context created with version: %s", glGetString(GL_VERSION));
-    }
 
+        state.current = StateEnum::first;
+        ChangeState();
+    }
+    bool ChangeState() {
+        if(state.current >= StateEnum::length) return false;
+        state.Init = StateMachine::Init[state.current];
+        state.Tick = StateMachine::Tick[state.current];
+        state.Quit = StateMachine::Quit[state.current];
+        state.Init();
+        return true;
+    }
     void Quit() {
         Log::Info("CoF::Quit()");
         if(glcontext) SDL_GL_DeleteContext(glcontext);
@@ -47,17 +111,6 @@ namespace CoF {
     }
 
     void Loop() {
-        /**/
-        for(uint8_t i = 0; i < StateEnum::length; i++) {
-            StateMachine::Init[i]();
-            StateMachine::Quit[i]();
-        }
-        /*/
-        while(true) {
-            if(state->update(state->data) && !InitState(state->data->nextState)) return false;
-            state->redraw(state->data);
-            SDL_GL_SwapWindow(window);
-        }
-        /**/
+        while(state.Tick() || ChangeState()) SDL_GL_SwapWindow(window);
     }
 }
