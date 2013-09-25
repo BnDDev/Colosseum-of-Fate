@@ -1,4 +1,4 @@
-#include "log.h"
+#include "Log.hpp"
 
 void Log::Init(Level ll, const char* file) {
     tstart = std::chrono::steady_clock::now();

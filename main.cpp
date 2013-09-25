@@ -1,7 +1,7 @@
 #include <ctime>
-#include "bnd.h"
-#include "log.h"
-#include "cof.h"
+#include "BnD.hpp"
+#include "Log.hpp"
+#include "CoF.hpp"
 
 int main(int argc, char** argv)
 {
@@ -13,11 +13,11 @@ int main(int argc, char** argv)
     Log::Init(Log::Level::Info/*, logfile*/);
     Log::Info("Initializing...");
 
-    CoF::Init("Colosseum of Fate", 800, 600);
+    CoF::Init("Colosseum of Fate", 1600, 900);
     CoF::Loop();
-    CoF::Quit();
 
     Log::Info("Quiting...");
+    CoF::Quit();
     Log::Quit();
     return 0;
 }
