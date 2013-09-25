@@ -46,14 +46,20 @@ namespace CoF {
         GLIdentity(global.matMV);
 
         global.state = StateEnum::INIT;
-        ChangeState();
+        if(!InitState()) global.Tick = nullptr;
+
         return true;
     }
-    bool ChangeState() {
+    bool InitState() {
         if(global.state >= StateEnum::length) return false;
-        global.Tick = StateMachine::Tick[global.state];
         StateMachine::Init[global.state]();
+        global.Tick = StateMachine::Tick[global.state];
         return true;
+    }
+    void SwitchState(StateEnum nextState) {
+        StateMachine::Quit[global.state]();
+        global.state = nextState;
+        if(!InitState()) global.Tick = nullptr;
     }
     void Quit() {
         Log::Info("CoF::Quit()");
@@ -61,12 +67,10 @@ namespace CoF {
         if(global.window) SDL_DestroyWindow(global.window);
         SDL_Quit();
     }
-
     void Loop() {
-        while(global.Tick() || ChangeState()) {
+        while(global.Tick) {
+            global.Tick();
             SDL_GL_SwapWindow(global.window);
         }
     }
-
-
 }

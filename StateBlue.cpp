@@ -19,23 +19,15 @@ namespace CoF {
     ////////////////////////////////
     /// StateEnum::Blue::Tick()  ///
     ////////////////////////////////
-    template<> bool StateTemplate<StateEnum::Blue>::Tick() {
+    template<> void StateTemplate<StateEnum::Blue>::Tick() {
         while(SDL_PollEvent(&global.event)) {
             switch(global.event.type)
             {
-            case SDL_MOUSEBUTTONUP:
-            case SDL_MOUSEMOTION:
-                global.state = StateEnum::Red;
-                Quit();
-                return false;
             case SDL_QUIT:
-                global.state = StateEnum::QUIT;
-                Quit();
-                return false;
+                SwitchState(StateEnum::QUIT);
+                return;
             }
         }
-
         glClear(GL_COLOR_BUFFER_BIT);
-        return true;
     }
 }

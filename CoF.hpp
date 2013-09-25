@@ -14,7 +14,7 @@ namespace CoF
         length,
         Global = length,
         INIT = Red,
-        QUIT = Global
+        QUIT = length
     };
 
     using Vec3 = BnD::Vec<GLfloat, 3>;
@@ -25,8 +25,9 @@ namespace CoF
         SDL_Window* window;
         SDL_GLContext glcontext;
         SDL_Event event;
+
         StateEnum state;
-        bool (*Tick)();
+        void (*Tick)();
 
         Mat4 matP;
         Mat4 matMV;
@@ -40,26 +41,27 @@ namespace CoF
     public:
         static void Init();
         static void Quit();
-        static bool Tick();
+        static void Tick();
     };
 
     template<typename> struct StateMachineTemplate;
     template<int... I> struct StateMachineTemplate<BnD::Indices<I...>> {
         static constexpr void (*Init[sizeof...(I)])() { (StateTemplate<I>::Init)... };
-        static constexpr bool (*Tick[sizeof...(I)])() { (StateTemplate<I>::Tick)... };
         static constexpr void (*Quit[sizeof...(I)])() { (StateTemplate<I>::Quit)... };
+        static constexpr void (*Tick[sizeof...(I)])() { (StateTemplate<I>::Tick)... };
     };
     using StateMachine = StateMachineTemplate<BnD::ExpandIndices<StateEnum::length>>;
 
     template<int I> StateDataTemplate<I> StateTemplate<I>::self = StateDataTemplate<I>();
     template<int... I> constexpr void (*StateMachineTemplate<BnD::Indices<I...>>::Init[sizeof...(I)])();
     template<int... I> constexpr void (*StateMachineTemplate<BnD::Indices<I...>>::Quit[sizeof...(I)])();
-    template<int... I> constexpr bool (*StateMachineTemplate<BnD::Indices<I...>>::Tick[sizeof...(I)])();
+    template<int... I> constexpr void (*StateMachineTemplate<BnD::Indices<I...>>::Tick[sizeof...(I)])();
     /* </magic> */
 
     extern StateDataTemplate<StateEnum::Global> global;
     bool Init(const char*, int, int);
-    bool ChangeState();
+    bool InitState();
+    void SwitchState(StateEnum);
     void Quit();
     void Loop();
 }
