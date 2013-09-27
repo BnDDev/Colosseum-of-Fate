@@ -1,5 +1,5 @@
-#ifndef STATERED_H
-#define STATERED_H
+#ifndef STATERED_HPP
+#define STATERED_HPP
 
 #include "CoF.hpp"
 
@@ -10,7 +10,8 @@ namespace CoF {
                 "#version 330 core\n"
 
                 "uniform mat4 uMat4P;"
-                "uniform mat4 uMat4MV;"
+                "uniform mat4 uMat4V;"
+                "uniform mat4 uMat4M;"
                 "uniform float uFloatTime;"
                 "in vec4 iVec4Data;"
                 "out float pFloatRadius;"
@@ -24,7 +25,8 @@ namespace CoF {
                 "#version 330 core\n"
 
                 "uniform mat4 uMat4P;"
-                "uniform mat4 uMat4MV;"
+                "uniform mat4 uMat4V;"
+                "uniform mat4 uMat4M;"
                 "layout(points) in;"
                 "layout(triangle_strip, max_vertices = 4) out;"
                 "in float pFloatRadius[1];"
@@ -36,22 +38,22 @@ namespace CoF {
                     "if(pFloatRadius[0] > 0.0) {"
                         "pVec2Tex = vec2(0.0, 0.0);"
                         "pFloatR = pFloatRadius[0];"
-                        "gl_Position = uMat4P * uMat4MV * vec4(gl_in[0].gl_Position.x - pFloatRadius[0], gl_in[0].gl_Position.y - pFloatRadius[0], gl_in[0].gl_Position.zw);"
+                        "gl_Position = uMat4P * uMat4V * uMat4M * vec4(gl_in[0].gl_Position.x - pFloatRadius[0], gl_in[0].gl_Position.y - pFloatRadius[0], gl_in[0].gl_Position.zw);"
                         "EmitVertex();"
 
                         "pVec2Tex = vec2(0.0, 1.0);"
                         "pFloatR = pFloatRadius[0];"
-                        "gl_Position = uMat4P * uMat4MV * vec4(gl_in[0].gl_Position.x - pFloatRadius[0], gl_in[0].gl_Position.y + pFloatRadius[0], gl_in[0].gl_Position.zw);"
+                        "gl_Position = uMat4P * uMat4V * uMat4M * vec4(gl_in[0].gl_Position.x - pFloatRadius[0], gl_in[0].gl_Position.y + pFloatRadius[0], gl_in[0].gl_Position.zw);"
                         "EmitVertex();"
 
                         "pVec2Tex = vec2(1.0, 0.0);"
                         "pFloatR = pFloatRadius[0];"
-                        "gl_Position = uMat4P * uMat4MV * vec4(gl_in[0].gl_Position.x + pFloatRadius[0], gl_in[0].gl_Position.y - pFloatRadius[0], gl_in[0].gl_Position.zw);"
+                        "gl_Position = uMat4P * uMat4V * uMat4M * vec4(gl_in[0].gl_Position.x + pFloatRadius[0], gl_in[0].gl_Position.y - pFloatRadius[0], gl_in[0].gl_Position.zw);"
                         "EmitVertex();"
 
                         "pVec2Tex = vec2(1.0, 1.0);"
                         "pFloatR = pFloatRadius[0];"
-                        "gl_Position = uMat4P * uMat4MV * vec4(gl_in[0].gl_Position.x + pFloatRadius[0], gl_in[0].gl_Position.y + pFloatRadius[0], gl_in[0].gl_Position.zw);"
+                        "gl_Position = uMat4P * uMat4V * uMat4M * vec4(gl_in[0].gl_Position.x + pFloatRadius[0], gl_in[0].gl_Position.y + pFloatRadius[0], gl_in[0].gl_Position.zw);"
                         "EmitVertex();"
                     "}"
 
@@ -82,8 +84,11 @@ namespace CoF {
         GLuint vbo;
         GLint iVec4Data;
         GLint uMat4P;
-        GLint uMat4MV;
+        GLint uMat4V;
+        GLint uMat4M;
         GLint uFloatTime;
+        Mat4 matV;
+        Mat4 matM;
         struct {
             union {
                 GLfloat data[4];
@@ -97,4 +102,4 @@ namespace CoF {
     };
 }
 
-#endif // STATERED_H
+#endif // STATERED_HPP

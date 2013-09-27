@@ -1,5 +1,5 @@
-#ifndef COF_H
-#define COF_H
+#ifndef COF_HPP
+#define COF_HPP
 
 #include <SDL2/SDL.h>
 #include "Log.hpp"
@@ -9,16 +9,15 @@
 namespace CoF
 {
     enum StateEnum : uint8_t {
-        Red,
+        //Red,
         Blue,
         length,
         Global = length,
-        INIT = Red,
+        INIT = Blue,
         QUIT = length
     };
 
-    using Vec3 = BnD::Vec<GLfloat, 3>;
-    using Mat4 = BnD::Mat<GLfloat, 4>;
+    template<uint8_t F> using Mesh3D = BnD::Mesh::GenericMesh<GLfloat, GLuint, 3, 3, F>;
 
     template<int I> struct StateDataTemplate {};
     template<> struct StateDataTemplate<StateEnum::Global> {
@@ -29,8 +28,7 @@ namespace CoF
         StateEnum state;
         void (*Tick)();
 
-        Mat4 matP;
-        Mat4 matMV;
+        BnD::Mat<GLfloat> matP;
     };
 
     /* <magic type="dark"> */
@@ -66,4 +64,4 @@ namespace CoF
     void Loop();
 }
 
-#endif // COF_H
+#endif // COF_HPP

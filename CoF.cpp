@@ -42,8 +42,7 @@ namespace CoF {
         }
         Log::Info("LoadGLFunctions OK");
 
-        GLOrtho(global.matP, 0.0f, w, h, 0.0f, -1.0, 1.0f);
-        GLIdentity(global.matMV);
+        GLOrtho(global.matP, 0.0f, w, h, 0.0f, -10.0f, 10.0f);
 
         global.state = StateEnum::INIT;
         if(!InitState()) global.Tick = nullptr;

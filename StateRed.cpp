@@ -1,15 +1,15 @@
-#include "StateRed.hpp"
-
+//#include "StateRed.hpp"
+/*
 namespace CoF {
-    extern const GLchar* const StateDataTemplate<StateEnum::Red>::fs;
-    extern const GLchar* const StateDataTemplate<StateEnum::Red>::gs;
     extern const GLchar* const StateDataTemplate<StateEnum::Red>::vs;
+    extern const GLchar* const StateDataTemplate<StateEnum::Red>::gs;
+    extern const GLchar* const StateDataTemplate<StateEnum::Red>::fs;
 
     ////////////////////////////////
-    /// StateEnum::Red::Init()   ///
+    /// StateRed::Init()         ///
     ////////////////////////////////
     template<> void StateTemplate<StateEnum::Red>::Init() {
-        Log::Info("State<Red>::Init()");
+        Log::Info("StateRed::Init()");
         self.tstart = std::chrono::steady_clock::now();
         self.tlast = self.tstart;
 
@@ -23,11 +23,16 @@ namespace CoF {
         glUseProgram(self.glp);
         self.iVec4Data = glGetAttribLocation(self.glp, "iVec4Data");
         self.uMat4P = glGetUniformLocation(self.glp, "uMat4P");
-        self.uMat4MV = glGetUniformLocation(self.glp, "uMat4MV");
+        self.uMat4V = glGetUniformLocation(self.glp, "uMat4V");
+        self.uMat4M = glGetUniformLocation(self.glp, "uMat4M");
         self.uFloatTime = glGetUniformLocation(self.glp, "uFloatTime");
 
-        glUniformMatrix4fv(self.uMat4P, 1, GL_FALSE, *global.matP.v);
-        glUniformMatrix4fv(self.uMat4MV, 1, GL_FALSE, *global.matMV.v);
+        self.matV.Identity();
+        self.matM.Identity();
+
+        glUniformMatrix4fv(self.uMat4P, 1, GL_FALSE, global.matP());
+        glUniformMatrix4fv(self.uMat4V, 1, GL_FALSE, self.matV());
+        glUniformMatrix4fv(self.uMat4M, 1, GL_FALSE, self.matM());
 
         glGenVertexArrays(1, &self.vao);
         glBindVertexArray(self.vao);
@@ -47,10 +52,10 @@ namespace CoF {
     }
 
     ////////////////////////////////
-    /// StateEnum::Red::Quit()   ///
+    /// StateRed::Quit()         ///
     ////////////////////////////////
     template<> void StateTemplate<StateEnum::Red>::Quit() {
-        Log::Info("State<Red>::Quit()");
+        Log::Info("StateRed::Quit()");
 
         glDeleteBuffers(1, &self.vbo);
         glDeleteVertexArrays(1, &self.vao);
@@ -58,7 +63,7 @@ namespace CoF {
     }
 
     ////////////////////////////////
-    /// StateEnum::Red::Tick()   ///
+    /// StateRed::Tick()         ///
     ////////////////////////////////
     template<> void StateTemplate<StateEnum::Red>::Tick() {
         std::chrono::steady_clock::time_point tnow = std::chrono::steady_clock::now();
@@ -105,4 +110,4 @@ namespace CoF {
             }
         }
     }
-}
+}*/

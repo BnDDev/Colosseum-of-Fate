@@ -121,31 +121,29 @@ GLuint NewGLProgram(const char* vs, const char* fs, const char* gs) {
     return glp;
 }
 
-void GLOrtho(BnD::Mat<GLfloat, 4>& mat, GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat near, GLfloat far)
-{
-    mat.v[0][0] = 2.0f / (right - left);
-    mat.v[0][1] = 0.0f;
-    mat.v[0][2] = 0.0f;
-    mat.v[0][3] = 0.0f;
+void GLOrtho(BnD::Mat<GLfloat, 4>& mat, GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat near, GLfloat far) {
+    mat[0][0] = 2.0f / (right - left);
+    mat[0][1] = 0.0f;
+    mat[0][2] = 0.0f;
+    mat[0][3] = 0.0f;
 
-    mat.v[1][0] = 0.0f;
-    mat.v[1][1] = 2.0f / (top - bottom);
-    mat.v[1][2] = 0.0f;
-    mat.v[1][3] = 0.0f;
+    mat[1][0] = 0.0f;
+    mat[1][1] = 2.0f / (top - bottom);
+    mat[1][2] = 0.0f;
+    mat[1][3] = 0.0f;
 
-    mat.v[2][0] = 0.0f;
-    mat.v[2][1] = 0.0f;
-    mat.v[2][2] = -2.0f / (far - near);
-    mat.v[2][3] = 0.0f;
+    mat[2][0] = 0.0f;
+    mat[2][1] = 0.0f;
+    mat[2][2] = -2.0f / (far - near);
+    mat[2][3] = 0.0f;
 
-    mat.v[3][0] = -(right + left) / (right - left);
-    mat.v[3][1] = -(top + bottom) / (top - bottom);
-    mat.v[3][2] = -(far + near) / (far - near);
-    mat.v[3][3] = 1.0f;
+    mat[3][0] = -(right + left) / (right - left);
+    mat[3][1] = -(top + bottom) / (top - bottom);
+    mat[3][2] = -(far + near) / (far - near);
+    mat[3][3] = 1.0f;
 }
-
-void GLIdentity(BnD::Mat<GLfloat, 4>& mat)
-{
+/*
+void GLIdentity(BnD::Mat<GLfloat, 4>& mat) {
     mat.v[0][0] = 1.0f;
     mat.v[0][1] = 0.0f;
     mat.v[0][2] = 0.0f;
@@ -166,3 +164,25 @@ void GLIdentity(BnD::Mat<GLfloat, 4>& mat)
     mat.v[3][2] = 0.0f;
     mat.v[3][3] = 1.0f;
 }
+
+void GLScale(BnD::Mat<GLfloat, 4>& mat, GLfloat x, GLfloat y, GLfloat z) {
+    mat.v[0][0] = 1.0f;
+    mat.v[0][1] = 0.0f;
+    mat.v[0][2] = 0.0f;
+    mat.v[0][3] = 0.0f;
+
+    mat.v[1][0] = 0.0f;
+    mat.v[1][1] = 1.0f;
+    mat.v[1][2] = 0.0f;
+    mat.v[1][3] = 0.0f;
+
+    mat.v[2][0] = 0.0f;
+    mat.v[2][1] = 0.0f;
+    mat.v[2][2] = 1.0f;
+    mat.v[2][3] = 0.0f;
+
+    mat.v[3][0] = 0.0f;
+    mat.v[3][1] = 0.0f;
+    mat.v[3][2] = 0.0f;
+    mat.v[3][3] = 1.0f;
+}*/

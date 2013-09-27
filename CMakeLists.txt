@@ -23,7 +23,7 @@ set(INCS ${INCS} ${OPENGL_INCLUDE_DIR})
 set(LIBS ${LIBS} ${OPENGL_LIBRARY})
 
 
-set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++ -Wno-comment")
+set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++ -Wall -Wno-comment -Wno-unused-variable -Wno-missing-braces")
 
 if(WIN32)
 	set(CMAKE_CXX_LINK_FLAGS "-mwindows")

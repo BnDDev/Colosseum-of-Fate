@@ -1,10 +1,11 @@
-#ifndef LOG_H
-#define LOG_H
+#ifndef LOG_HPP
+#define LOG_HPP
 
 #include <cstdio>
 #include <cstdint>
 #include <chrono>
 #include <cstdarg>
+#include <cassert>
 
 namespace Log {
     enum class Level : uint8_t {
@@ -28,4 +29,4 @@ namespace Log {
     }
 }
 
-#endif // LOG_H
+#endif // LOG_HPP

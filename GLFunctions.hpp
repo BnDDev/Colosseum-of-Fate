@@ -1,5 +1,5 @@
-#ifndef GLFUNCTIONS_H
-#define GLFUNCTIONS_H
+#ifndef GLFUNCTIONS_HPP
+#define GLFUNCTIONS_HPP
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
@@ -42,5 +42,6 @@ int LoadGLFunctions();
 GLuint NewGLProgram(const char*, const char*, const char* _default_ = nullptr);
 void GLOrtho(BnD::Mat<GLfloat, 4>&, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
 void GLIdentity(BnD::Mat<GLfloat, 4>&);
+void GLScale(BnD::Mat<GLfloat, 4>&);
 
-#endif // GLFUNCTIONS_H
+#endif // GLFUNCTIONS_HPP
