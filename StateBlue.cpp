@@ -70,10 +70,11 @@ namespace CoF {
             //for(size_t r = 0; r < 4; r++)
             //Log::Info("Identity[%zu][%zu]: %f", i, r, Mat4::IdentityMat().v[i][r]);
         //}
-        Log::Info("is_pod(Mat4): %s", std::is_pod<BnD::Mat<GLfloat>>::value ? "true" : "false");
         Log::Info("is_pod(Vec): %s", std::is_pod<BnD::Vec<int, 5>>::value ? "true" : "false");
         Log::Info("is_pod(Mat): %s", std::is_pod<BnD::Mat<int, 5, 6>>::value ? "true" : "false");
+        Log::Info("is_pod(Mat4): %s", std::is_pod<BnD::Mat<GLfloat>>::value ? "true" : "false");
         Log::Info("sizeof(Mat): %zu", sizeof(BnD::Mat<GLfloat>));
+
 
         std::vector<BnD::Vec<GLfloat>> vv(v.begin(), v.end());
         std::vector<BnD::Vec<GLfloat>> vvn(vn.begin(), vn.end());
@@ -93,7 +94,7 @@ namespace CoF {
 
         self.matM.Identity();
         self.matV.Identity();
-        self.matV.Move(0, 800.0f).Move(1, 450.0f);
+        self.matV.Translate(0, 800.0f).Translate(1, 450.0f);
         self.matV.Scale(0, 100.0f).Scale(1, 100.0f).Scale(2, 1.0f);
         //GLIdentity(self.matM);
         //GLScale(self.matM, 2.0, 2.0, 2.0);
@@ -156,9 +157,9 @@ namespace CoF {
         //self.matM.Identity();
         //self.matM.Rotate(0, 0.01f);//.Rotate(1, self.rY);
         BnD::Mat<GLfloat> temp;
-        temp.Identity().Rotate(1, 0.01f);
+        temp.Identity().Rotate(0, 0.125f);
         self.matM = self.matM * temp;
-        //self.matM.Rotate(1, 0.01f);
+        //self.matM.Rotate(0, 0.125f);
         //self.matM.Rotate(1, 0.5f);
         glUniformMatrix4fv(self.uMat4M, 1, GL_FALSE, &self.matM);
 

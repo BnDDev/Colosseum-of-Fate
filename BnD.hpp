@@ -46,6 +46,9 @@ namespace BnD {
         inline CLASS& a(const T& v) { return (this->self()[3] = v, this->self()); }
     };
 
+    // BnD::Vec<TYPE, SIZE> (default SIZE = 3)
+    template<typename T, size_t S = 3> struct Vec : VecImpl<Vec<T, S>, T, S> {};
+
     template<class CLASS, typename T, size_t R, size_t C> struct MatImpl : std::array<std::array<T, C>, R> {
         const T* operator&() const { return reinterpret_cast<const T*>(this); }
         inline CLASS& self() { return *static_cast<CLASS*>(const_cast<MatImpl<CLASS, T, R, C>*>(this)); }
@@ -58,28 +61,33 @@ namespace BnD {
         static constexpr CLASS IdentityMat() { return _makeIdentity(BuildIndices<S>{}); }
 
         // TODO: define multiply operators for matrices other than square
-        CLASS& operator *=(const MatSquareImpl<CLASS, T, S>& mat) { return *this * mat; }
-        CLASS& operator *(const MatSquareImpl<CLASS, T, S>& mat) {
-            for(size_t r = 0; r < S; r++)
-                for(size_t c = 0; c < S; c++) {
-                    T val = 0;
-                    for(size_t i = 0; i < S; i++)
-                        val += (*this)[i][r] * mat[c][i];
-                    (*this)[c][r] = val;
-                }
+        CLASS operator *(const MatSquareImpl<CLASS, T, S>& mat) {
+            CLASS ret = this->self();
+            ret *= mat;
+            return ret;
+        }
+        CLASS& operator *=(const MatSquareImpl<CLASS, T, S>& mat) {
+            Vec<T, S> val;
+            for(size_t r = 0; r < S; r++) {
+                for(size_t c = 0; c < S; c++)
+                    for(size_t i = (val[c] = 0.0, 0); i < S; i++)
+                        val[c] += (*this)[i][r] * mat[c][i];
+                for(size_t c = 0; c < S; c++)
+                    (*this)[c][r] = val[c];
+            }
             return this->self();
         }
         CLASS& Identity() {
             for(size_t r = 0; r < S; r++)
                 for(size_t c = 0; c < S; c++)
-                    (*this)[c][r] = (r == c ? 1.0 : 0.0);
+                    (*this)[c][r] = (T)(r == c ? 1.0 : 0.0);
             return this->self();
         }
     };
     template<class CLASS, typename T> struct Mat4Impl : MatSquareImpl<CLASS, T, 4> {
         static constexpr const size_t S = 4;
 
-        CLASS& Move(size_t axis, T value) {
+        CLASS& Translate(size_t axis, T value) {
             assert(axis < S);
             for(size_t r = 0; r < S; r++)
                 (*this)[S - 1][r] += value * (*this)[axis][r];
@@ -105,9 +113,6 @@ namespace BnD {
             return this->self();
         }
     };
-
-    // BnD::Vec<TYPE, SIZE> (default SIZE = 3)
-    template<typename T, size_t S = 3> struct Vec : VecImpl<Vec<T, S>, T, S> {};
 
     // BnD::Mat<TYPE, ROWS, COLS> (default COLS = ROWS, default ROWS = 4)
     template<typename T, size_t R = 4, size_t C = R> struct Mat : MatImpl<Mat<T, R, C>, T, R, C> {};
