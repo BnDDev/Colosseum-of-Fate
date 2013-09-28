@@ -18,26 +18,31 @@ namespace CoF {
             "uniform mat4 uMat4P;"
             "uniform mat4 uMat4V;"
             "uniform mat4 uMat4M;"
+            "uniform vec3 uVec3Light;"
             "in vec3 iVec3Vertex;"
             "in vec3 iVec3Normal;"
             "out vec3 pVec3Normal;"
             "out vec3 pVec3Vertex;"
+            "out vec3 pVec3Light;"
 
             "void main() {"
                 "pVec3Normal = iVec3Normal;"
                 "gl_Position = uMat4P * uMat4V * uMat4M * vec4(iVec3Vertex, 1.0);"
                 "pVec3Vertex = vec3(gl_Position);"
+                "pVec3Light = normalize(uVec3Light);"
             "}";
 
         static constexpr const GLchar* const fs =
             "#version 330 core\n"
 
+            "in vec3 pVec3Light;"
             "in vec3 pVec3Normal;"
             "in vec3 pVec3Vertex;"
             "out vec4 oVec4Color;"
 
             "void main() {"
-                "float c = 1.0 - (pVec3Vertex.z + 1.0) / 2.0;"
+                //"float c = 1.0 - (pVec3Vertex.z + 1.0) / 2.0;"
+                "float c = max(0.25, dot(pVec3Normal, pVec3Light));"
                 "oVec4Color = vec4(c, c, c, 1.0);"
             "}";
 
@@ -53,6 +58,9 @@ namespace CoF {
         GLint uMat4P;
         GLint uMat4V;
         GLint uMat4M;
+        GLint uVec3Light;
+        BnD::Vec<GLfloat, 2> rotation;
+        BnD::Vec<GLfloat, 3> vecLight;
         uint32_t inputFlags;
         enum InputFlags {
             None = 0x0,

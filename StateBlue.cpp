@@ -10,7 +10,7 @@ namespace CoF {
     template<> void StateTemplate<StateEnum::Blue>::Init() {
         Log::Info("StateBlue::Init()");
         glClearColor(0.0, 0.0, 1.0, 1.0);
-        glEnable(GL_CULL_FACE);
+        //glEnable(GL_CULL_FACE);
         glCullFace(GL_FRONT);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
@@ -22,7 +22,7 @@ namespace CoF {
         std::list<BnD::Vec<GLuint>> f;
         std::map<std::array<GLuint, 3>, GLuint> vertices;
         std::map<std::array<GLuint, 3>, GLuint>::iterator it;
-        std::ifstream fin("./data/test1.obj");
+        std::ifstream fin("./data/model1_3.obj");
         BnD::Vec<GLfloat> temp_v, temp_vn;
         BnD::Vec<GLuint> temp_f;
         std::array<GLuint, 3> temp_vertex;
@@ -75,7 +75,6 @@ namespace CoF {
         Log::Info("is_pod(Mat4): %s", std::is_pod<BnD::Mat<GLfloat>>::value ? "true" : "false");
         Log::Info("sizeof(Mat): %zu", sizeof(BnD::Mat<GLfloat>));
 
-
         std::vector<BnD::Vec<GLfloat>> vv(v.begin(), v.end());
         std::vector<BnD::Vec<GLfloat>> vvn(vn.begin(), vn.end());
 
@@ -95,7 +94,10 @@ namespace CoF {
         self.matM.Identity();
         self.matV.Identity();
         self.matV.Translate(0, 800.0f).Translate(1, 450.0f);
-        self.matV.Scale(0, 100.0f).Scale(1, 100.0f).Scale(2, 1.0f);
+        self.matV.Scale(0, 50.0f).Scale(1, 50.0f).Scale(2, 1.0f);
+        self.matV.Rotate(0, 3.14159f / 2.0f);
+        self.vecLight.x(1.0f).y(1.0f).z(1.0f);
+        self.rotation.x(0.0f).y(0.0f);
         //GLIdentity(self.matM);
         //GLScale(self.matM, 2.0, 2.0, 2.0);
 
@@ -106,10 +108,12 @@ namespace CoF {
         self.uMat4P = glGetUniformLocation(self.GLProgram, "uMat4P");
         self.uMat4V = glGetUniformLocation(self.GLProgram, "uMat4V");
         self.uMat4M = glGetUniformLocation(self.GLProgram, "uMat4M");
+        self.uVec3Light = glGetUniformLocation(self.GLProgram, "uVec3Light");
 
         glUniformMatrix4fv(self.uMat4P, 1, GL_FALSE, &global.matP);
         glUniformMatrix4fv(self.uMat4V, 1, GL_FALSE, &self.matV);
         glUniformMatrix4fv(self.uMat4M, 1, GL_FALSE, &self.matM);
+        glUniform3fv(self.uVec3Light, 1, &self.vecLight);
 
         glGenVertexArrays(1, &self.VAO);
         glBindVertexArray(self.VAO);
@@ -152,23 +156,19 @@ namespace CoF {
     ////////////////////////////////
     template<> void StateTemplate<StateEnum::Blue>::Tick() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         glUseProgram(self.GLProgram);
 
-        //self.matM.Identity();
-        //self.matM.Rotate(0, 0.01f);//.Rotate(1, self.rY);
-        BnD::Mat<GLfloat> temp;
-        temp.Identity().Rotate(0, 0.125f);
-        self.matM = self.matM * temp;
-        //self.matM.Rotate(0, 0.125f);
-        //self.matM.Rotate(1, 0.5f);
-        glUniformMatrix4fv(self.uMat4M, 1, GL_FALSE, &self.matM);
+        if(self.inputFlags & StateData::InputFlags::ArrowUp) self.rotation.x() += 0.05f;
+        if(self.inputFlags & StateData::InputFlags::ArrowDown) self.rotation.x() -= 0.05f;
+        if(self.inputFlags & StateData::InputFlags::ArrowRight) self.rotation.y() += 0.05f;
+        if(self.inputFlags & StateData::InputFlags::ArrowLeft) self.rotation.y() -= 0.05f;
 
-        if(self.inputFlags & StateData::InputFlags::ArrowUp) self.matV.Rotate(0, 0.01f);
-        if(self.inputFlags & StateData::InputFlags::ArrowDown) self.matV.Rotate(0, -0.01f);
-        if(self.inputFlags & StateData::InputFlags::ArrowRight) self.matV.Rotate(1, 0.01f);
-        if(self.inputFlags & StateData::InputFlags::ArrowLeft) self.matV.Rotate(1, -0.01f);
-        //self.matV.Rotate(2, 0.15f);
-        glUniformMatrix4fv(self.uMat4V, 1, GL_FALSE, &self.matV);
+        BnD::Mat<GLfloat> temp = self.matV;
+        temp.Rotate(0, self.rotation.x()).Rotate(1, self.rotation.y());
+
+        glUniform3fv(self.uVec3Light, 1, &self.vecLight);
+        glUniformMatrix4fv(self.uMat4V, 1, GL_FALSE, &temp);
 
         glBindVertexArray(self.VAO);
         glBindBuffer(GL_ARRAY_BUFFER, self.VBOVertex);
@@ -177,7 +177,7 @@ namespace CoF {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
-        //glUseProgram(0);
+        glUseProgram(0);
 
         while(SDL_PollEvent(&global.event)) {
             switch(global.event.type)
@@ -241,6 +241,17 @@ namespace CoF {
                 }
                 break;
             case SDL_MOUSEMOTION:
+                if(self.inputFlags & StateData::InputFlags::MouseLeft) {
+                    self.rotation.y() -= global.event.motion.xrel / 100.0f;
+                    self.rotation.x() -= global.event.motion.yrel / 100.0f;
+                }
+                if(self.inputFlags & StateData::InputFlags::MouseRight) {
+                    self.vecLight.x() -= global.event.motion.xrel / 100.0f;
+                    self.vecLight.y() -= global.event.motion.yrel / 100.0f;
+                }
+                break;
+            case SDL_MOUSEWHEEL:
+                self.vecLight.z() -= global.event.wheel.y / 10.0f;
                 break;
             case SDL_QUIT:
                 SwitchState(StateEnum::QUIT);

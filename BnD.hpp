@@ -49,7 +49,7 @@ namespace BnD {
     // BnD::Vec<TYPE, SIZE> (default SIZE = 3)
     template<typename T, size_t S = 3> struct Vec : VecImpl<Vec<T, S>, T, S> {};
 
-    template<class CLASS, typename T, size_t R, size_t C> struct MatImpl : std::array<std::array<T, C>, R> {
+    template<class CLASS, typename T, size_t R, size_t C> struct MatImpl : std::array<Vec<T, C>, R> {
         const T* operator&() const { return reinterpret_cast<const T*>(this); }
         inline CLASS& self() { return *static_cast<CLASS*>(const_cast<MatImpl<CLASS, T, R, C>*>(this)); }
 
